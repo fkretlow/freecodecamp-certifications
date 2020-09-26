@@ -19,8 +19,8 @@ def arrange_problem(problem, show_result=False):
     lines = [
         f"  {first:>{width}}",
         f"{operator} {second:>{width}}",
+        "-" * (width + 2),
     ]
-    lines.append("-" * (width+2))
 
     if show_result:
         if operator == "+":
@@ -37,9 +37,7 @@ def arithmetic_arranger(problems, show_result=False):
         return "Error: Too many problems."
 
     try:
-        lines = transpose_matrix(
-                [arrange_problem(problem, show_result) for problem in problems]
-        )
+        lines = transpose_matrix([arrange_problem(problem, show_result) for problem in problems])
     except ValueError as e:
         return str(e)
 
