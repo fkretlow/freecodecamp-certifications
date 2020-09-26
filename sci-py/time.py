@@ -1,8 +1,8 @@
 def divide_in_units(total, units):
-    # All arguments are ints.
-    # For each unit, divide out as many as possible from total.
-    # Return a list of factors.
-    # Example: divide_in_units(28, 10, 5) -> [2, 1, 3]
+    """
+    All arguments are ints. For each unit, divide out as many as possible from total.
+    Return a list of factors. Example: divide_in_units(28, (10, 5, 1)) -> [2, 1, 3].
+    """
     result = []
     for unit in units:
         factor = int(total / unit)
@@ -18,7 +18,7 @@ class Time(object):
 
     @classmethod
     def fromstring(cls, string):
-        # accepts a time string like "11:30 AM"
+        """Accepts a time string like '11:30 AM'."""
         parts = string.split()
         time = parts[0]
         hours, minutes = (int(x) for x in time.split(':'))
