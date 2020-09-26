@@ -34,6 +34,7 @@ class CashInDrawer {
   // A CashInDrawer has-a Map that associates counts of coins/bills with
   // denominations (values). To solve the problem we only need a constructor
   // and a method to give out cash.
+
   constructor(units_and_amounts) {
     // The constructor builds the Map from a list of denominations and amounts
     // like [ [ 'PENNY', 0.01 ], ... ].
@@ -48,41 +49,35 @@ class CashInDrawer {
   give_change(amount) {
     // Return an object with a status and the requested amount in cash, if possible:
     // { status: 'OPEN', change: [ [ 'PENNY', 0.01 ], ... ] }
-    let result = {};
+    let result = { change: [] };
 
     if (amount === this._total()) {
       // This part of the specification is a little peculiar.
       // Why give all the empty coin stacks? Oh well...
       result.status = "CLOSED";
-      result.change = [];
-      for (const [ value, count ] of this.cash) {
+      for (const [value, count] of this.cash) {
         result.change.push([
           VALUE_TO_UNIT.get(value),
           round_float(count * value, 2),
         ]);
-      }
-
-      for (const value of this.cash.keys()) {
         this.cash.set(value, 0);
       }
-    } else {
-      const in_cash = this._in_cash(0, amount);
 
-      if (in_cash === IMPOSSIBLE) {
+    } else {
+      const change = this._in_cash(0, amount);
+
+      if (change === IMPOSSIBLE) {
         result.status = "INSUFFICIENT_FUNDS";
-        result.change = [];
+
       } else {
-        for (const [value, count] of in_cash) {
+        result.status = "OPEN";
+        for (const [value, count] of change) {
+          result.change.push([
+            VALUE_TO_UNIT.get(value),
+            round_float(count * value, 2),
+          ])
           this.cash.set(value, this.cash.get(value) - count);
         }
-
-        result.status = "OPEN";
-        result.change = in_cash.map(([value, count]) => {
-          return [
-            VALUE_TO_UNIT.get(value),
-            count * value,
-          ];
-        });
       }
     }
 
@@ -98,11 +93,12 @@ class CashInDrawer {
   }
 
   _in_cash(value_index, amount) {
-    // This algorithm finds a way to give out the requested amount in terms
-    // of the available coins and bills.
-    // The problem is a variant of the bin-packing problem. We have a basic
-    // recursive solution where we check the biggest denominations first, and
-    // backtrack only when we hit a dead end.
+    // The algorithm finds a way to give out the requested amount as a set of
+    // coins and bills, depending on which denominations are available.
+    // The problem is a variant of the knapsack problem where the knapsack must
+    // be filled exactly. We have a basic recursive solution where we try to
+    // take as many pieces of the biggest available denomination as possible,
+    // backtracking only when we hit a dead end.
     if (amount === 0) {
       return DONE;
     } else if (value_index >= VALUES.length) {
@@ -110,20 +106,19 @@ class CashInDrawer {
     }
 
     const value = VALUES[value_index];
-    let max_count = Math.floor(amount / value);
-    if (max_count > this.cash.get(value)) max_count = this.cash.get(value);
-
-    for (let count = max_count; count >= 0; --count) {
+    for (let count = Math.min(Math.floor(amount / value), this.cash.get(value));
+         count >= 0;
+         --count) {
       let rest = round_float(amount - count * value, 2);
       let sub_solution = this._in_cash(value_index + 1, rest);
 
       if (sub_solution === DONE) {
-        return [ [ value, count ] ];
+        return [ [value, count] ];
       } else if (sub_solution === IMPOSSIBLE) {
         continue;
       } else {
         if (count > 0) {
-          return [ [ value, count ], ...sub_solution ];
+          return [ [value, count], ...sub_solution ];
         } else {
           return sub_solution;
         }
