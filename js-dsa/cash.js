@@ -1,5 +1,5 @@
 const round_float = (n, places) => parseFloat(n.toFixed(places));
-const OK = 0;
+const DONE = 0;
 const IMPOSSIBLE = -1;
 
 
@@ -38,42 +38,41 @@ class CashInDrawer {
     // The constructor builds the Map from a list of denominations and amounts
     // like [ [ 'PENNY', 0.01 ], ... ].
     this.cash = new Map();
-    for (let stack of units_and_amounts) {
-      let [unit, amount] = stack;
-      let value = UNIT_TO_VALUE.get(unit);
-      let count = Math.round(amount / value);
+    for (const [unit, amount] of units_and_amounts) {
+      const value = UNIT_TO_VALUE.get(unit);
+      const count = Math.round(amount / value);
       this.cash.set(value, count);
     }
   }
 
-  take(amount) {
+  give_change(amount) {
     // Return an object with a status and the requested amount in cash, if possible:
     // { status: 'OPEN', change: [ [ 'PENNY', 0.01 ], ... ] }
     let result = {};
 
-    if (amount === this._amount()) {
+    if (amount === this._total()) {
       // This part of the specification is a little peculiar.
       // Why give all the empty coin stacks? Oh well...
       result.status = "CLOSED";
       result.change = [];
-      for (let [ value, count ] of this.cash.entries()) {
+      for (const [ value, count ] of this.cash) {
         result.change.push([
           VALUE_TO_UNIT.get(value),
           round_float(count * value, 2),
         ]);
       }
 
-      for (let value of this.cash.keys()) {
+      for (const value of this.cash.keys()) {
         this.cash.set(value, 0);
       }
     } else {
-      let in_cash = this._in_cash(0, amount);
+      const in_cash = this._in_cash(0, amount);
 
       if (in_cash === IMPOSSIBLE) {
         result.status = "INSUFFICIENT_FUNDS";
         result.change = [];
       } else {
-        for (let [value, count] of in_cash) {
+        for (const [value, count] of in_cash) {
           this.cash.set(value, this.cash.get(value) - count);
         }
 
@@ -90,12 +89,12 @@ class CashInDrawer {
     return result;
   }
 
-  _amount() {
-    let amount = 0;
+  _total() {
+    let total = 0;
     for (let value of this.cash.keys()) {
-      amount += this.cash.get(value) * value;
+      total += this.cash.get(value) * value;
     }
-    return amount;
+    return total;
   }
 
   _in_cash(value_index, amount) {
@@ -105,12 +104,12 @@ class CashInDrawer {
     // recursive solution where we check the biggest denominations first, and
     // backtrack only when we hit a dead end.
     if (amount === 0) {
-      return OK;
+      return DONE;
     } else if (value_index >= VALUES.length) {
       return IMPOSSIBLE;
     }
 
-    let value = VALUES[value_index];
+    const value = VALUES[value_index];
     let max_count = Math.floor(amount / value);
     if (max_count > this.cash.get(value)) max_count = this.cash.get(value);
 
@@ -118,7 +117,7 @@ class CashInDrawer {
       let rest = round_float(amount - count * value, 2);
       let sub_solution = this._in_cash(value_index + 1, rest);
 
-      if (sub_solution === OK) {
+      if (sub_solution === DONE) {
         return [ [ value, count ] ];
       } else if (sub_solution === IMPOSSIBLE) {
         continue;
@@ -138,5 +137,10 @@ class CashInDrawer {
 
 function checkCashRegister(price, cash, cid) {
   cid = new CashInDrawer(cid);
-  return cid.take(cash - price);
+  return cid.give_change(cash - price);
 }
+
+
+console.log(checkCashRegister(3.26, 100, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]))
+
+console.log(checkCashRegister(19.5, 20, [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]))
