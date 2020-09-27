@@ -77,8 +77,7 @@ def create_spend_chart(categories):
         column += list(category.name)
         columns.append(column)
         columns.append(margin)
-
-    columns.append(margin)
+        columns.append(margin)
 
     height = max(len(column) for column in columns)
     for column in columns:
@@ -90,19 +89,3 @@ def create_spend_chart(categories):
     lines = ["Percentage spent by category"]
     lines += ["".join(line).rstrip() for line in transpose_matrix(columns)]
     return "\n".join(lines)
-
-
-if __name__ == "__main__":
-    clothing = Category("Clothing")
-    clothing.deposit(1000, "initial deposit")
-    clothing.withdraw(50.25, "jacket")
-    clothing.withdraw(27.95, "socks")
-
-    food = Category("Food")
-    food.deposit(500, "initial deposit")
-    food.withdraw(12, "breakfast")
-    food.withdraw(9.5, "lunch")
-    food.withdraw(3, "icecream")
-    food.withdraw(22.8, "dinner")
-
-    print(create_spend_chart([clothing, food]))

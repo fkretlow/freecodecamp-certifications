@@ -18,6 +18,6 @@ Complete ([certificate](https://www.freecodecamp.org/certification/fcc5d6cdc63-f
 
 - [x] [`arithmetic-formatter.py`](./sci-py/arithmetic-formatter.py): Arrange arithmetic problems vertically.
 - [x] [`time.py`](./sci-py/time.py): Calculations with time.
-- [ ] Budget app.
+- [x] [`budget.py`](./sci-py/budget.py): Budget app.
 - [ ] Polygon area calculator.
 - [ ] Probability calculator.
