@@ -31,6 +31,7 @@ class Category(object):
                 })
         self._balance -= amount
         other.deposit(amount, f"Transfer from {self.name}")
+        return True
 
     def check_funds(self, amount):
         return amount <= self._balance
