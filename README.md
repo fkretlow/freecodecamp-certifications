@@ -6,7 +6,7 @@ These are my solutions to the projects that are required to claim [certification
 
 ### Javascript Algorithms and Datastructures
 
-Complete ([certificate](https://www.freecodecamp.org/certification/fcc5d6cdc63-fa33-46e3-a5fe-58c51daa45cf/javascript-algorithms-and-data-structures)) 
+Complete ([certificate](https://www.freecodecamp.org/certification/fcc5d6cdc63-fa33-46e3-a5fe-58c51daa45cf/javascript-algorithms-and-data-structures)).
 
 - [x] [`palindrome.js`](./js-dsa/palindrome.js): Check if a given string is a palindrome.
 - [x] [`roman-numerals.js`](./js-dsa/roman-numerals.js): Convert an integer to a roman numeral.
@@ -16,8 +16,10 @@ Complete ([certificate](https://www.freecodecamp.org/certification/fcc5d6cdc63-f
 
 ### Scientific Computing with Python
 
+Complete ([certificate](https://www.freecodecamp.org/certification/fcc5d6cdc63-fa33-46e3-a5fe-58c51daa45cf/scientific-computing-with-python-v7)).
+
 - [x] [`arithmetic-formatter.py`](./sci-py/arithmetic-formatter.py): Arrange arithmetic problems vertically.
 - [x] [`time.py`](./sci-py/time.py): Calculations with time.
 - [x] [`budget.py`](./sci-py/budget.py): Budget app.
 - [x] [`polygon.py`](./sci-py/polygon.py): OO with rectangles and squares.
-- [ ] Probability calculator.
+- [x] [`probability.py`](./sci-py/probability.py): Probability calculator.
