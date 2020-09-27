@@ -35,6 +35,13 @@ class Category(object):
     def check_funds(self, amount):
         return amount <= self._balance
 
+    def withdrawals(self):
+        total = 0
+        for entry in self.ledger:
+            if entry["amount"] < 0 and not entry["description"].startswith("Transfer"):
+                total += entry["amount"]
+        return total
+
     def __str__(self):
         lines = []
         lines.append(f"{self.name:*^30}")
@@ -44,13 +51,58 @@ class Category(object):
         return "\n".join(lines)
 
 
-if __name__ == "__main__":
-    food = Category("Food")
-    clothing = Category("Clothing")
-    food.deposit(1000, "initial deposit")
-    food.withdraw(10.15, "groceries")
-    food.withdraw(18.89, "restaurant and more food")
-    food.transfer(50, clothing)
+def transpose_matrix(matrix):
+    result = []
+    for i in range(len(matrix[0])):
+        result.append([row[i] for row in matrix])
+    return result
 
-    print(food)
-    print(clothing)
+
+def create_spend_chart(categories):
+    columns = []
+    marks = [f"{x:>3}|" for x in range(100, -1, -10)]
+    columns.append(marks)
+
+    margin = [" " for _ in range(11)] + ["-"]
+    columns.append(margin)
+
+    total_withdrawals = sum(category.withdrawals() for category in categories)
+    for category in categories:
+        column = []
+        percentage = int(10 * category.withdrawals() / total_withdrawals) * 10
+        empty_rows = (100 - percentage) // 10
+        for _ in range(empty_rows): column.append(" ")
+        for _ in range(percentage // 10 + 1): column.append("o")
+        column.append("-")
+        column += list(category.name)
+        columns.append(column)
+        columns.append(margin)
+
+    columns.append(margin)
+
+    height = max(len(column) for column in columns)
+    for column in columns:
+        if len(column) < height:
+            width = max(len(row) for row in column)
+            for _ in range(height - len(column)):
+                column.append(" " * width)
+
+    lines = ["Percentage spent by category"]
+    lines += ["".join(line).rstrip() for line in transpose_matrix(columns)]
+    return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    clothing = Category("Clothing")
+    clothing.deposit(1000, "initial deposit")
+    clothing.withdraw(50.25, "jacket")
+    clothing.withdraw(27.95, "socks")
+
+    food = Category("Food")
+    food.deposit(500, "initial deposit")
+    food.withdraw(12, "breakfast")
+    food.withdraw(9.5, "lunch")
+    food.withdraw(3, "icecream")
+    food.withdraw(22.8, "dinner")
+
+    print(create_spend_chart([clothing, food]))
