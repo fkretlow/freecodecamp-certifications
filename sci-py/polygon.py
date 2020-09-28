@@ -1,32 +1,48 @@
+# The tests on repl.it will fail with this solution. The specification requests
+# C++-like getters and setters. The idiomatic way for this in Python is to use
+# properties, which I'm doing here. However, this makes the class code a little
+# more involved, so I kind of see why they avoid this in the project..
+
 class Rectangle(object):
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
+        self._width = width
+        self._height = height
 
     def __repr__(self):
         return f"{self.__class__.__name__}(width={self.width}, height={self.height})"
 
-    def set_width(self, width):
-        self.width = width
+    @property
+    def width(self):
+        return self._width
+    @width.setter
+    def width(self, width):
+        self._width = width
 
-    def set_height(self, height):
-        self.height = height
+    @property
+    def height(self):
+        return self._height
+    @height.setter
+    def height(self, height):
+        self._height = height
 
-    def get_area(self):
+    @property
+    def area(self):
         return self.width * self.height
 
-    def get_perimeter(self):
+    @property
+    def perimeter(self):
         return 2 * (self.width + self.height)
 
-    def get_diagonal(self):
+    @property
+    def diagonal(self):
         return (self.width ** 2 + self.height ** 2) ** .5
 
-    def get_picture(self):
+    def picture(self):
         if self.width > 50 or self.height > 50:
             return "Too big for picture."
         return self.height * (self.width * "*" + "\n")
 
-    def get_amount_inside(self, shape):
+    def amount_inside(self, shape):
         return int(self.width / shape.width) * int(self.height / shape.height)
 
 
@@ -37,11 +53,23 @@ class Square(Rectangle):
     def __repr__(self):
         return f"{self.__class__.__name__}(side={self.width})"
 
-    def set_side(self, side):
-        self.width = self.height = side
+    @property
+    def side(self):
+        return self._width
+    @side.setter
+    def side(self, side):
+        self._width = self._height = side
 
-    def set_width(self, width):
-        self.set_side(width)
+    @property
+    def width(self):
+        return self._width
+    @width.setter
+    def width(self, width):
+        self._width = self._height = width
 
-    def set_height(self, height):
-        self.set_side(height)
+    @property
+    def height(self):
+        return self._height
+    @height.setter
+    def height(self, height):
+        self._width = self._height = height
